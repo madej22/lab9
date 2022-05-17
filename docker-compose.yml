@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8000:80
+    volumes:
+      - "./nginx:/etc/nginx/conf.d"
+    networks:
+      - backend
+      - frontend
+
+  php:
+    image: php:8.0.18-fpm
+    volumes:
+      - "./files:/var/www/html"
+    ports:
+      - 9000:9000
+    networks:
+      backend:
+  
+  mysql:
+    image: mysql:latest
+    volumes:
+      - mysql_vol:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "Pluto123"
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - 'mysql:db'
+    ports:
+      - 6001:80
+    networks:
+      - backend
+
+volumes:
+  mysql_vol:
+
+networks:
+  frontend:
+  backend:
